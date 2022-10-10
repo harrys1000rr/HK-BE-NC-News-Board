@@ -38,7 +38,7 @@ First clone project and install dependencies
 -----------------------------------------------------------
 ## Deployment
 
-You will need to create two .env files for your project: .env.test and .env.development. In each file, add `PGDATABASE=<database_name_here>`, with the database name for that environment. The default names are nc_news_test and nc_news for the test and dev environments. 
+You need to create two .env files for your project: .env.test and .env.development. In each file, add `PGDATABASE=<database_name_here>`, with the database name for that environment. The default names are nc_news_test and nc_news for the test and dev environments. 
 
 You should run the script `psql -f setup.sql` to create the databases. To seed the database in the current ENV, run `npm run seed`. This will wipe all the data and resets the tables with the original data that is in the `db` folder in both dev and test environments.
 
