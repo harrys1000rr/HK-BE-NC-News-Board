@@ -7,16 +7,6 @@ const seed = require("../db/seeds/seed.js");
 beforeEach(() => seed(testData));
 afterAll(() => db.end());
 
-describe("test invalid URL", () => {
-  test("404: show user that URL is invalid", () => {
-    return request(app)
-      .get("/api/BigManTing")
-      .expect(404)
-      .then((res) => {
-        expect(res.body.msg).toBe("Invalid URL");
-      });
-  });
-});
 
 describe("GET /api/topics", () => {
   test("200: should respond with a list of topics", () => {
@@ -38,3 +28,52 @@ describe("GET /api/topics", () => {
   });
 });
 
+describe('GET - /api/articles/:article_id', () => {
+  test('GET - when given a valid ID, will return status 200 along with respective article. ', () => {
+    return request(app)
+      .get(`/api/articles/2`)
+      .expect(200)
+      .then((res) => {
+        expect(res.body.article).toEqual(
+          expect.objectContaining({
+            article_id: 2,
+            title: expect.any(String),
+            author: expect.any(String),
+            body: expect.any(String),
+            topic: expect.any(String),
+            created_at: expect.any(String),
+            votes: expect.any(Number)
+          })
+        );
+      });
+  });
+})
+
+
+// ------------ Error Handling ------------//
+describe("Error Handling", () => {
+  test("404: show user that URL is invalid", () => {
+    return request(app)
+      .get("/api/BigManTing")
+      .expect(404)
+      .then((res) => {
+        expect(res.body.msg).toBe("Invalid URL");
+      });
+  });
+});
+test('invalid ID datatype provided for getArticleById', () => {
+  return request(app)
+    .get('/api/articles/SELECTA!')
+    .expect(400)
+    .then((res) => {
+      expect(res.body).toEqual({ msg: 'Invalid id type!' });
+    });
+});
+test("status:404, responds with a 404 error when passed a article id which does not exist in the database.", () => {
+  return request(app)
+    .get("/api/articles/24")
+    .expect(404)
+    .then(({ body }) => {
+      expect(body.msg).toEqual("Article with this ID not found.");
+    });
+});
