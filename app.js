@@ -8,7 +8,7 @@ app.get('/api/topics', getTopics);
 
 
 app.all('/*', (req, res) => {
-  res.status(404).send({ msg: 'Route not found' });
+  res.status(404).send({ msg: 'Invalid URL' });
 });
 
 

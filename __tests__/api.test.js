@@ -18,3 +18,23 @@ describe("test invalid URL", () => {
   });
 });
 
+describe("GET /api/topics", () => {
+  test("200: should respond with a list of topics", () => {
+    return request(app)
+      .get("/api/topics")
+      .expect(200)
+      .then((res) => {
+        // console.log(res)
+        expect(res.body.topics).toHaveLength(3);
+        res.body.topics.forEach((topic) => {
+          expect(topic).toEqual(
+            expect.objectContaining({
+              slug: expect.any(String),
+              description: expect.any(String),
+            })
+          );
+        });
+      });
+  });
+});
+
