@@ -8,3 +8,4 @@ exports.getTopics = (req, res) => {
     })
 
 }
+
