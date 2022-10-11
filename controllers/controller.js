@@ -1,4 +1,4 @@
-const {selectTopics,selectArticleById,selectUsers} = require('../models/model.js')
+const {selectTopics,selectArticleById,selectUsers,patchArticleById} = require('../models/model.js')
 
 
 exports.getTopics = (req, res) => {
@@ -8,12 +8,10 @@ exports.getTopics = (req, res) => {
     })
 
 }
-
 exports.getArticleById = (req, res, next) => {
     const { article_id } = req.params;
     selectArticleById(article_id)
       .then((response) => {
-        console.log(response)
         res.status(200).send({ article: response });
       })
       .catch((err) => {
@@ -27,3 +25,17 @@ exports.getArticleById = (req, res, next) => {
         res.status(200).send({users})
     })
 };
+
+exports.updateArticleById = (req, res,next) => {
+    const { article_id } = req.params;
+    const { inc_votes } = req.body;
+    console.log(inc_votes)
+    patchArticleById(article_id, inc_votes).then((article) => {
+    res.status(200).send({ article })
+    })
+    .catch((err) => {
+        next(err);
+      });
+  };
+    
+  

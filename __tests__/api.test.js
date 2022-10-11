@@ -14,7 +14,6 @@ describe("GET /api/topics", () => {
       .get("/api/topics")
       .expect(200)
       .then((res) => {
-        // console.log(res)
         expect(res.body.topics).toHaveLength(3);
         res.body.topics.forEach((topic) => {
           expect(topic).toEqual(
@@ -34,7 +33,6 @@ describe("GET /api/users", () => {
       .get("/api/users")
       .expect(200)
       .then((res) => {
-        console.log(res)
         expect(res.body.users).toHaveLength(4);
         res.body.users.forEach((user) => {
           expect(user).toEqual(
@@ -71,6 +69,30 @@ describe('GET - /api/articles/:article_id', () => {
       });
   });
 })
+
+describe("PATCH", () => {
+  test("responds with status 200 and spcific article is updated", () => {
+    return request(app)
+      .patch("/api/articles/2")
+      .send({ inc_votes: 50 })
+      .expect(200)
+      .then((res) => {
+        expect(res.body.article).toEqual(
+          expect.objectContaining({
+            article_id: 2,
+            title: expect.any(String),
+            author: expect.any(String),
+            body: expect.any(String),
+            topic: expect.any(String),
+            created_at: expect.any(String),
+            votes: expect.any(Number)
+          })
+        );
+      });
+  });
+  
+});
+
 
 
 // ------------ Error Handling ------------//
