@@ -50,7 +50,7 @@ describe("GET /api/users", () => {
 
 
 describe('GET - /api/articles/:article_id', () => {
-  test('GET - when given a valid ID, will return status 200 along with respective article. ', () => {
+  test('GET - when given a valid parametric, will return status 200- ', () => {
     return request(app)
       .get(`/api/articles/2`)
       .expect(200)
@@ -68,7 +68,19 @@ describe('GET - /api/articles/:article_id', () => {
         );
       });
   });
-})
+
+  test('GET comment count- ', () => {
+    return request(app)
+      .get(`/api/articles/9`)
+      .expect(200)
+      .then((res) => {
+        expect(res.body.article).toEqual(
+          expect.objectContaining({ comment_count: expect.any(String) })
+        );
+        expect(res.body.article.comment_count).toBe('2');
+      });
+  });
+});
 
 describe("PATCH", () => {
   test("responds with status 200 and spcific article is updated", () => {
