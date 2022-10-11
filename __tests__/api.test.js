@@ -28,6 +28,29 @@ describe("GET /api/topics", () => {
   });
 });
 
+describe("GET /api/users", () => {
+  test("200: should respond with a list of users", () => {
+    return request(app)
+      .get("/api/users")
+      .expect(200)
+      .then((res) => {
+        console.log(res)
+        expect(res.body.users).toHaveLength(4);
+        res.body.users.forEach((user) => {
+          expect(user).toEqual(
+            expect.objectContaining({
+              username: expect.any(String),
+              name: expect.any(String),
+              avatar_url: expect.any(String),
+            })
+          );
+        });
+      });
+  });
+});
+
+
+
 describe('GET - /api/articles/:article_id', () => {
   test('GET - when given a valid ID, will return status 200 along with respective article. ', () => {
     return request(app)
@@ -71,7 +94,7 @@ test('invalid ID datatype provided for getArticleById', () => {
 });
 test("status:404, responds with a 404 error when passed a article id which does not exist in the database.", () => {
   return request(app)
-    .get("/api/articles/24")
+    .get("/api/articles/111")
     .expect(404)
     .then(({ body }) => {
       expect(body.msg).toEqual("Article with this ID not found.");
