@@ -67,12 +67,23 @@ exports.selectArticles = (
       WHERE ${topicCondition} OR topic = $1
       GROUP BY articles.article_id
       ORDER BY ${sortBy} ${orderBy}`,[topic]
-    )
+  )
+ 
     .then(({ rows }) => {
       return rows;
     });
 };
 
+
+exports.deleteCommentById = (commentId) => {
+  return db
+    .query(`DELETE FROM comments WHERE comment_id = $1 RETURNING*;`, [
+      commentId,
+    ])
+    .then((comment) => {
+      return comment.rows[0];
+    });
+};
   exports.createCommentByArticleId = (author, body, commentArticleId) => {
     return db.query(
         `INSERT INTO comments (author, body, article_id) 
@@ -83,3 +94,5 @@ exports.selectArticles = (
         return comment.rows[0];
       });
   };
+
+  

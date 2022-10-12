@@ -175,11 +175,24 @@ describe("8. GET /api/articles?topic", () => {
 
 })
 
-
-
-
-  
-
+describe("12. DELETE /api/comments/:comment_id", () => {
+    test.only("204: Returns status code 204 and deletes comment", () => {
+      return request(app)
+        .delete("/api/comments/1")
+        .expect(204)
+        .then((res) => {
+          expect(res.body).toEqual({});
+        });
+    });
+    test.only("400: Returns status code 400 if an invalid ID type is entered", () => {
+      return request(app)
+        .delete("/api/comments/an")
+        .expect(400)
+        .then((res) => {
+          expect(res.body.msg).toEqual("Invalid id type!");
+        });
+    });
+  });
 // ------------ Error Handling ------------//
 describe("Error Handling", () => {
   test("404: show user that URL is invalid", () => {
