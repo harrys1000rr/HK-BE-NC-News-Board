@@ -68,35 +68,6 @@ describe('GET - /api/articles/:article_id', () => {
         );
       });
   });
-})
-
-describe("PATCH", () => {
-  test("responds with status 200 and spcific article is updated", () => {
-    return request(app)
-      .patch("/api/articles/2")
-      .send({ inc_votes: 50 })
-      .expect(200)
-      .then((res) => {
-        expect(res.body.article).toEqual(
-          expect.objectContaining({
-            article_id: 2,
-            title: expect.any(String),
-            author: expect.any(String),
-            body: expect.any(String),
-            topic: expect.any(String),
-            created_at: expect.any(String),
-            votes: expect.any(Number)
-          })
-        );
-      });
-  });
-  
-});
-
-
-
-// ------------ Error Handling ------------//
-describe("Error Handling", () => {
   test("404: show user that URL is invalid", () => {
     return request(app)
       .get("/api/BigManTing")
@@ -122,3 +93,30 @@ test("status:404, responds with a 404 error when passed a article id which does 
       expect(body.msg).toEqual("Article with this ID not found.");
     });
 });
+
+
+describe("PATCH", () => {
+  test("responds with status 200 and spcific article is updated with correct vote count", () => {
+    return request(app)
+      .patch("/api/articles/2")
+      .send({ inc_votes: 50 })
+      .expect(200)
+      .then((res) => {
+        expect(res.body.article).toEqual(
+          expect.objectContaining({
+            article_id: 2,
+            title: expect.any(String),
+            author: expect.any(String),
+            body: expect.any(String),
+            topic: expect.any(String),
+            created_at: expect.any(String),
+            votes: 50
+          })
+        );
+      });
+  });
+  
+});
+
+
+
