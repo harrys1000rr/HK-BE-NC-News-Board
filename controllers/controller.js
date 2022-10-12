@@ -36,14 +36,15 @@ exports.updateArticleById = (req, res,next) => {
       });
   };
 
-  exports.getArticles = (request, response,next) => {
-    const { topic } = request.query
-    selectArticles(topic).then((articles) => {
-        response.status(200).send({ articles })
-    })
-    .catch((err) => {
-        next(err);
-      });
+  exports.getArticles = (req, res, next) => {
+    const sortBy = req.query.sort_by;
+    const orderBy = req.query.order;
+    const topic = req.query.topic;
+    selectArticles(sortBy, orderBy, topic)
+      .then((articles) => {
+        res.status(200).send({ articles });
+      })
+      .catch(next);
   };
 
   exports.postCommentsByArticleId = (req, res, next) => {

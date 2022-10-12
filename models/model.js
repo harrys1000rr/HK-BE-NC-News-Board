@@ -31,25 +31,47 @@ exports.selectArticleById = (id) => {
         return results.rows
     })
 }
-exports.selectArticles = (topic) => {
-    if (topic!==undefined)
-    {
-    return db.query('SELECT articles.*, COUNT(comment_id)AS comment_count FROM articles LEFT JOIN comments ON comments.article_id =  articles.article_id where articles.topic=$1 GROUP BY articles.article_id ORDER BY articles.created_at desc',[topic])
-    .then((result) => { 
-       if (result["rowCount"] === 0) {
+exports.selectArticles = (
+  sortBy = "created_at",
+  orderBy = "DESC",
+  topic,
+) => {
+  let topicCondition = false;
+  if (!topic) {
+    topicCondition = true;
+  }
+  const allowedSortBy = [
+    "article_id",
+    "title",
+    "body",
+    "votes",
+    "author",
+    "topic",
+    "created_at",
+    "comment_count",
+  ];
 
-      return Promise.reject({ status: 404, msg: 'Articles not found'});
-    }
-    return result.rows;
-  });
-      }
-   else
-   return db.query('SELECT articles.*, COUNT(comment_id)AS comment_count FROM articles LEFT JOIN comments ON comments.article_id =  articles.article_id GROUP BY articles.article_id ORDER BY articles.created_at desc')
-   .then((result) => {
-    return result.rows;
-    
-  });
-  };
+  if (!allowedSortBy.includes(sortBy)) {
+    return Promise.reject({ status: 400, msg: "Bad request" });
+  }
+
+  const allowedOrder = ["ASC", "DESC", "asc", "desc"];
+  if (!allowedOrder.includes(orderBy)) {
+    return Promise.reject({ status: 400, msg: "Bad request" });
+  }
+  return db.query(
+      `SELECT articles.*, COUNT(comments.comment_id) AS comment_count
+      FROM articles
+      LEFT JOIN comments
+      ON articles.article_id = comments.article_id
+      WHERE ${topicCondition} OR topic = $1
+      GROUP BY articles.article_id
+      ORDER BY ${sortBy} ${orderBy}`,[topic]
+    )
+    .then(({ rows }) => {
+      return rows;
+    });
+};
 
   exports.createCommentByArticleId = (author, body, commentArticleId) => {
     return db.query(

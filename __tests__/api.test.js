@@ -51,7 +51,7 @@ describe("GET /api/users", () => {
 
 
 describe('GET - /api/articles/:article_id', () => {
-  test('GET - when given a valid parametric, will return status 200- ', () => {
+  test('GET - when given a valid parametric, will return status 200 ', () => {
     return request(app)
       .get(`/api/articles/2`)
       .expect(200)
@@ -116,7 +116,6 @@ describe("8. GET /api/articles?topic", () => {
         descending: true,
       });
       res.body.articles.forEach((article) => {
-        console.log(Object.keys(article))
         expect(Object.keys(article)).toEqual([
           "article_id",
           "title",
@@ -146,6 +145,38 @@ describe("8. GET /api/articles?topic", () => {
   });
   
   });
+
+
+  describe("11. GET /api/articles (queries) orderby/sortby", () => {
+    test("200: return array sorted by created_at desc", () => {
+      return request(app)
+        .get("/api/articles?sort_by=created_at")
+        .expect(200)
+        .then((res) => {
+          expect(res.body.articles).toBeSorted({ descending: true });
+        });
+    });
+    test("200 - returns the articles sorted in asc order", () => {
+      return request(app)
+        .get("/api/articles?order=asc")
+        .expect(200)
+        .then((res) => {
+          expect(res.body.articles).toBeSorted({ ascending: true });
+        });
+  });
+  test("404: Return status code 404 when provided non_existent sort_by column", () => {
+    return request(app)
+      .get("/api/articles?sort_by=colummn")
+      .expect(404)
+      .then(({ body }) => {
+        expect(body.msg).toBe("Not found");
+      });
+  });
+
+})
+
+
+
 
   
 
