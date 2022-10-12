@@ -108,8 +108,9 @@ describe("6. PATCH /api/articles/:article_id", () => {
 
 
 describe("8. GET /api/articles?topic", () => {
-    test.only("200: returns an array of all articles with correct comment count (sorted by date descending as default) when passed no queries", async () => {
-      const res = await request(app).get("/api/articles").expect(200);
+    test("200: returns an array of all articles with correct comment count (sorted by date descending as default) when passed no queries", async () => {
+      const res = await request(app)
+      .get("/api/articles").expect(200);
       expect(res.body.articles.length).toBe(12);
       expect(res.body.articles).toBeSortedBy("created_at", {
         descending: true,
@@ -136,11 +137,11 @@ describe("8. GET /api/articles?topic", () => {
       expect(res.body.articles).toBeSortedBy('created_at', { descending: true });
   });
   
-  test('200: returns empty array when given topic query that does not exist', async () => {
+  test('404: returns empty array when given topic query that does not exist', async () => {
     const res = await request(app)
       .get("/api/articles?topic=BIGMANHARRY")
-        .expect(200);
-    expect(res.body.articles.length).toBe(0);
+        .expect(404);
+        expect(res.body.msg).toEqual("Articles not found");
   
   });
   

@@ -35,15 +35,19 @@ exports.selectArticles = (topic) => {
     if (topic!=undefined)
     {
     return db.query('SELECT articles.*, COUNT(comment_id)AS comment_count FROM articles LEFT JOIN comments ON comments.article_id =  articles.article_id where articles.topic=$1 GROUP BY articles.article_id ORDER BY articles.created_at desc',[topic])
-    .then((result) => {
-            return result.rows;
-          });
+    .then((result) => { 
+       if (result["rowCount"] === 0) {
+
+      return Promise.reject({ status: 404, msg: 'Articles not found'});
+    }
+    return result.rows;
+  });
       }
    else if (topic==undefined){
    return db.query('SELECT articles.*, COUNT(comment_id)AS comment_count FROM articles LEFT JOIN comments ON comments.article_id =  articles.article_id GROUP BY articles.article_id ORDER BY articles.created_at desc')
    .then((result) => {
-        return result.rows;
-      });
+    return result.rows;
+  });
   };}
      
   
