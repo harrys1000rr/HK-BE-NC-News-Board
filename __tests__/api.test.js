@@ -3,6 +3,7 @@ const request = require("supertest");
 const app = require("../app.js");
 const testData = require("../db/data/test-data/index.js");
 const seed = require("../db/seeds/seed.js");
+require('jest-sorted');
 
 beforeEach(() => seed(testData));
 afterAll(() => db.end());
@@ -82,8 +83,8 @@ describe('GET - /api/articles/:article_id', () => {
   });
 });
 
-describe("PATCH", () => {
-  test("responds with status 200 and spcific article is updated", () => {
+describe("6. PATCH /api/articles/:article_id", () => {
+  test("responds with status 200 and specific article is updated", () => {
     return request(app)
       .patch("/api/articles/2")
       .send({ inc_votes: 50 })
@@ -106,6 +107,46 @@ describe("PATCH", () => {
 });
 
 
+describe("8. GET /api/articles?topic", () => {
+    test.only("200: returns an array of all articles with correct comment count (sorted by date descending as default) when passed no queries", async () => {
+      const res = await request(app).get("/api/articles").expect(200);
+      expect(res.body.articles.length).toBe(12);
+      expect(res.body.articles).toBeSortedBy("created_at", {
+        descending: true,
+      });
+      res.body.articles.forEach((article) => {
+        console.log(Object.keys(article))
+        expect(Object.keys(article)).toEqual([
+          "article_id",
+          "title",
+          "topic",
+          "author",
+          "body",
+          "created_at",
+          "votes",
+          "comment_count"
+        ]);
+      });
+    });
+    test('200: returns array filtered by topic when given a topic query', async () => {
+      const res = await request(app)
+          .get('/api/articles?topic=mitch')
+          .expect(200)
+      expect(res.body.articles.length).toBe(11);
+      expect(res.body.articles).toBeSortedBy('created_at', { descending: true });
+  });
+  
+  test('200: returns empty array when given topic query that does not exist', async () => {
+    const res = await request(app)
+      .get("/api/articles?topic=BIGMANHARRY")
+        .expect(200);
+    expect(res.body.articles.length).toBe(0);
+  
+  });
+  
+  });
+
+  
 
 // ------------ Error Handling ------------//
 describe("Error Handling", () => {
@@ -131,6 +172,6 @@ test("status:404, responds with a 404 error when passed a article id which does 
     .get("/api/articles/111")
     .expect(404)
     .then(({ body }) => {
-      expect(body.msg).toEqual("Article with this ID not found.");
+      expect(body.msg).toEqual("Articles not found");
     });
 });

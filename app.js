@@ -1,10 +1,12 @@
 const express = require('express');
-const {getTopics,getArticleById,getUsers,updateArticleById} = require('./controllers/controller.js');
+const {getTopics,getArticleById,getUsers,updateArticleById,getArticles} = require('./controllers/controller.js');
 
 const app = express();
 app.use(express.json());
 
 app.get('/api/topics', getTopics);
+
+app.get('/api/articles', getArticles);
 
 app.get('/api/articles/:article_id', getArticleById);
 
@@ -17,12 +19,10 @@ app.all('/*', (req, res) => {
 });
 
 app.use((err,req,res,next) => {
-  console.log(err)
   if (err.code === '22P02') {
-    console.log(err)
   res.status(400).send({msg: 'Invalid id type!'})} 
   else if (err.status) {
-    res.status(404).send({msg: 'Article with this ID not found.'})} 
+    res.status(404).send({msg: 'Articles not found'})} 
     else 
   {next(err)}})
 
