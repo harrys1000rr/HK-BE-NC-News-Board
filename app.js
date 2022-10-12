@@ -1,5 +1,5 @@
 const express = require('express');
-const {getTopics,getArticleById,getUsers,updateArticleById} = require('./controllers/controller.js');
+const {getTopics,getArticleById,getUsers,updateArticleById,getArticleComments} = require('./controllers/controller.js');
 
 const app = express();
 app.use(express.json());
@@ -11,6 +11,9 @@ app.get('/api/articles/:article_id', getArticleById);
 app.get('/api/users', getUsers);
 
 app.patch('/api/articles/:article_id', updateArticleById);
+
+
+app.get("/api/articles/:article_id/comments", getArticleComments);
 
 app.all('/*', (req, res) => {
   res.status(404).send({ msg: 'Invalid URL' });

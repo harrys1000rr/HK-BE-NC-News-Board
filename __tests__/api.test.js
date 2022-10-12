@@ -95,7 +95,7 @@ test("status:404, responds with a 404 error when passed a article id which does 
 });
 
 
-describe("PATCH", () => {
+describe("6. PATCH /api/articles/:article_id", () => {
   test("responds with status 200 and spcific article is updated with correct vote count", () => {
     return request(app)
       .patch("/api/articles/2")
@@ -120,3 +120,37 @@ describe("PATCH", () => {
 
 
 
+
+
+describe('9. GET /api/articles/:article_id/comments', () => {
+      test("200: returns comments for article", () => {
+        return request(app)
+          .get("/api/articles/1/comments")
+          .expect(200)
+          .then((res) => {
+            expect(res.body.comments.length).toEqual(11);
+            expect(res.body.comments).toBeInstanceOf(Array);
+            res.body.comments.forEach((comment) => {
+              expect(comment.article_id).toEqual(1);
+            });
+          });
+      });
+      test("200: returns msg for article with no comments", () => {
+        return request(app)
+          .get("/api/articles/22/comments")
+          .expect(200)
+          .then((res) => {
+            expect(res.body).toEqual({ comments: "No comments available for this article!" });
+          });
+
+      });
+      test("400: returns msg Invalid id type! for invalid id", () => {
+        return request(app)
+          .get("/api/articles/dd/comments")
+          .expect(400)
+          .then((res) => {
+            expect(res.body).toEqual({ msg: 'Invalid id type!' });
+          });
+
+      });
+    });
