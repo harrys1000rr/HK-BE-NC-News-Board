@@ -1,6 +1,10 @@
 const {selectTopics,selectArticleById,selectUsers,patchArticleById,selectArticles} = require('../models/model.js')
 
 
+const {selectArticlesa} = require('../models/example.js')
+
+
+
 exports.getTopics = (req, res) => {
     selectTopics()
     .then((topics) => {
@@ -39,7 +43,7 @@ exports.updateArticleById = (req, res,next) => {
 
   exports.getArticles = (request, response,next) => {
     const { topic } = request.query
-    selectArticles(topic).then((articles) => {
+    selectArticlesa(topic).then((articles) => {
         response.status(200).send({ articles })
     })
     .catch((err) => {
