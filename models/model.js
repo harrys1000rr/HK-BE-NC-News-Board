@@ -47,7 +47,17 @@ exports.selectArticles = (topic) => {
    return db.query('SELECT articles.*, COUNT(comment_id)AS comment_count FROM articles LEFT JOIN comments ON comments.article_id =  articles.article_id GROUP BY articles.article_id ORDER BY articles.created_at desc')
    .then((result) => {
     return result.rows;
+    
   });
   };
-     
-  
+
+  exports.createCommentByArticleId = (author, body, commentArticleId) => {
+    return db.query(
+        `INSERT INTO comments (author, body, article_id) 
+      VALUES($1,$2,$3) RETURNING *;`,
+        [author, body, commentArticleId]
+      )
+      .then((comment) => {
+        return comment.rows[0];
+      });
+  };

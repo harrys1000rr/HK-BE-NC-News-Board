@@ -1,9 +1,4 @@
-const {selectTopics,selectArticleById,selectUsers,patchArticleById,selectArticles} = require('../models/model.js')
-
-
-const {selectArticlesa} = require('../models/example.js')
-
-
+const {selectTopics,selectArticleById,selectUsers,patchArticleById,selectArticles,createCommentByArticleId} = require('../models/model.js')
 
 exports.getTopics = (req, res) => {
     selectTopics()
@@ -43,7 +38,7 @@ exports.updateArticleById = (req, res,next) => {
 
   exports.getArticles = (request, response,next) => {
     const { topic } = request.query
-    selectArticlesa(topic).then((articles) => {
+    selectArticles(topic).then((articles) => {
         response.status(200).send({ articles })
     })
     .catch((err) => {
@@ -51,4 +46,19 @@ exports.updateArticleById = (req, res,next) => {
       });
   };
 
-  
+  exports.postCommentsByArticleId = (req, res, next) => {
+    const author = req.body.username;
+    const body = req.body.body;
+    const commentArticleId = req.params.article_id;
+    createCommentByArticleId(author,body,commentArticleId).then((comment) => {
+    return res.status(201).send({ comment });
+})
+.catch((err) => {
+    next(err);
+  });
+     
+}
+
+
+    
+

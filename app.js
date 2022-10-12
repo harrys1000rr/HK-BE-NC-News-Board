@@ -1,5 +1,5 @@
 const express = require('express');
-const {getTopics,getArticleById,getUsers,updateArticleById,getArticles} = require('./controllers/controller.js');
+const {getTopics,getArticleById,getUsers,updateArticleById,getArticles,postCommentsByArticleId} = require('./controllers/controller.js');
 
 const app = express();
 app.use(express.json());
@@ -14,6 +14,8 @@ app.get('/api/users', getUsers);
 
 app.patch('/api/articles/:article_id', updateArticleById);
 
+app.post('/api/articles/:article_id/comments', postCommentsByArticleId);
+
 app.all('/*', (req, res) => {
   res.status(404).send({ msg: 'Invalid URL' });
 });
@@ -21,8 +23,10 @@ app.all('/*', (req, res) => {
 app.use((err,req,res,next) => {
   if (err.code === '22P02') {
   res.status(400).send({msg: 'Invalid id type!'})} 
+  else if (err.code=23503) {
+    res.status(404).send({msg: 'Not found'})} 
   else if (err.status) {
-    res.status(404).send({msg: 'Articles not found'})} 
+    res.status(404).send({msg: 'Not found'})} 
     else 
   {next(err)}})
 

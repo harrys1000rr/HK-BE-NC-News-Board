@@ -176,3 +176,60 @@ test("status:404, responds with a 404 error when passed a article id which does 
       expect(body.msg).toEqual("Articles not found");
     });
 });
+
+
+describe("10. POST /api/articles/:article_id/comments", () => {
+  test("201:Return status code 201 with the new comment", () => {
+    const newComment = { username: "lurker", body: "YOLO!" };
+    return request(app)
+      .post("/api/articles/1/comments")
+      .send(newComment)
+      .expect(201)
+      .then(({ body }) => {
+        expect(body.comment).toEqual({
+          comment_id: expect.any(Number),
+          body: "YOLO!",
+          article_id: 1,
+          author: "lurker",
+          votes: expect.any(Number),
+          created_at: expect.any(String),        
+        });
+      });
+  });
+  test("201: Return status code 201 new comment", () => {
+    const newComment = { username: "lurker", body: "YOLO!" };
+    return request(app)
+      .post("/api/articles/1/comments")
+      .send(newComment)
+      .expect(201)
+      .then(({ body }) => {
+        expect(body.comment).toEqual({
+          comment_id: expect.any(Number),
+          body: "YOLO!",
+          article_id: 1,
+          author: "lurker",
+          votes: expect.any(Number),
+          created_at: expect.any(String),        
+        });
+      });
+  });
+  test("Return status code 404 if article_id is valid but not found", () => {
+    return request(app)
+      .post("/api/articles/3000/comments")
+      .expect(404)
+      .then(({ body }) => {
+        expect(body.msg).toBe("Not found");
+      });
+  });
+
+  test("Return status code 404 if username is valid but not found", () => {
+    const newComment = { username: "BAM", body: "test" };
+    return request(app)
+      .post("/api/articles/1/comments")
+      .send(newComment)
+      .expect(404)
+      .then(({ body }) => {
+        expect(body.msg).toBe("Not found");
+      });
+  });
+});
