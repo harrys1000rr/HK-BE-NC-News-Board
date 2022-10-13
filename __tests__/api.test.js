@@ -153,6 +153,9 @@ describe("8. GET /api/articles?topic", () => {
         .get("/api/articles/1/comments")
         .expect(200)
         .then((res) => {
+          expect(res.body).toBeSortedBy("created_at", {
+            descending: true,
+          });
           res.body.forEach((comment) => {
             expect(Object.keys(comment)).toEqual([
               "comment_id",
