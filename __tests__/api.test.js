@@ -28,6 +28,8 @@ describe("GET /api/topics", () => {
   });
 });
 
+
+
 describe("GET /api/users", () => {
   test("200: should respond with a list of users", () => {
     return request(app)
@@ -49,9 +51,9 @@ describe("GET /api/users", () => {
 });
 
 
-
+//this test includes tests for task 7 
 describe('GET - /api/articles/:article_id', () => {
-  test('GET - when given a valid parametric, will return status 200- ', () => {
+  test.only('GET - when given a valid parametric, will return status 200- ', () => {
     return request(app)
       .get(`/api/articles/2`)
       .expect(200)
@@ -81,7 +83,24 @@ describe('GET - /api/articles/:article_id', () => {
         expect(res.body.article.comment_count).toBe('2');
       });
   });
+  test("400: when invalid article_id format is used", () => {
+    return request(app)
+      .get("/api/articles/BigManTing")
+      .expect(400)
+      .then((res) => {
+        expect(res.body.msg).toBe("Invalid id type!");
+      });
+  });
+  test("404, return 404 when valid article_id format is provided but id doesnt exist", () => {
+    return request(app)
+      .get("/api/articles/111")
+      .expect(404)
+      .then(({ body }) => {
+        expect(body.msg).toEqual("Articles not found");
+      });
+  });
 });
+  
 
 describe("6. PATCH /api/articles/:article_id", () => {
   test("responds with status 200 and specific article is updated", () => {
@@ -107,72 +126,8 @@ describe("6. PATCH /api/articles/:article_id", () => {
 });
 
 
-describe("8. GET /api/articles?topic", () => {
-    test("200: returns an array of all articles with correct comment count (sorted by date descending as default) when passed no queries", async () => {
-      const res = await request(app)
-      .get("/api/articles").expect(200);
-      expect(res.body.articles.length).toBe(12);
-      expect(res.body.articles).toBeSortedBy("created_at", {
-        descending: true,
-      });
-      res.body.articles.forEach((article) => {
-        console.log(Object.keys(article))
-        expect(Object.keys(article)).toEqual([
-          "article_id",
-          "title",
-          "topic",
-          "author",
-          "body",
-          "created_at",
-          "votes",
-          "comment_count"
-        ]);
-      });
-    });
-    test('200: returns array filtered by topic when given a topic query', async () => {
-      const res = await request(app)
-          .get('/api/articles?topic=mitch')
-          .expect(200)
-      expect(res.body.articles.length).toBe(11);
-      expect(res.body.articles).toBeSortedBy('created_at', { descending: true });
-  });
-  
-  test('404: returns empty array when given topic query that does not exist', async () => {
-    const res = await request(app)
-      .get("/api/articles?topic=BIGMANHARRY")
-        .expect(404);
-        expect(res.body.msg).toEqual("Articles not found");
-  
-  });
-  
-  });
-
   
 
-// ------------ Error Handling ------------//
-describe("Error Handling", () => {
-  test("404: show user that URL is invalid", () => {
-    return request(app)
-      .get("/api/BigManTing")
-      .expect(404)
-      .then((res) => {
-        expect(res.body.msg).toBe("Invalid URL");
-      });
-  });
-});
-test('invalid ID datatype provided for getArticleById', () => {
-  return request(app)
-    .get('/api/articles/SELECTA!')
-    .expect(400)
-    .then((res) => {
-      expect(res.body).toEqual({ msg: 'Invalid id type!' });
-    });
-});
-test("status:404, responds with a 404 error when passed a article id which does not exist in the database.", () => {
-  return request(app)
-    .get("/api/articles/111")
-    .expect(404)
-    .then(({ body }) => {
-      expect(body.msg).toEqual("Articles not found");
-    });
-});
+
+
+
