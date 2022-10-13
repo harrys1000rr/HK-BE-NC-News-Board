@@ -1,5 +1,13 @@
 const {selectTopics,deleteCommentById,selectArticleById,selectUsers,patchArticleById,selectArticles,createCommentByArticleId} = require('../models/model.js')
 
+const endpoints = require("../endpoints.json");
+
+
+exports.listEndpoints = (req, res) => {
+  res.status(200).send(endpoints)
+  
+}
+
 exports.getTopics = (req, res) => {
     selectTopics()
     .then((topics) => {
