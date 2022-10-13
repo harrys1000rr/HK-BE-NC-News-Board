@@ -148,31 +148,49 @@ describe("8. GET /api/articles?topic", () => {
   });
 
   
-
-// ------------ Error Handling ------------//
-describe("Error Handling", () => {
-  test("404: show user that URL is invalid", () => {
-    return request(app)
-      .get("/api/BigManTing")
-      .expect(404)
-      .then((res) => {
-        expect(res.body.msg).toBe("Invalid URL");
-      });
+  describe("10. POST /api/articles/:article_id/comments", () => {
+    test("201:Return status code 201 along with the new comment", () => {
+      const newComment = { username: "lurker", body: "YOLO!" };
+      return request(app)
+        .post("/api/articles/1/comments")
+        .send(newComment)
+        .expect(201)
+        .then(({ body }) => {
+          expect(body.comment).toEqual({
+            comment_id: expect.any(Number),
+            body: "YOLO!",
+            article_id: 1,
+            author: "lurker",
+            votes: expect.any(Number),
+            created_at: expect.any(String),        
+          });
+        });
+    });
+   
+    test("Return status code 404 if article_id is valid format but not found", () => {
+      return request(app)
+        .post("/api/articles/3000/comments")
+        .expect(404)
+        .then(({ body }) => {
+          expect(body.msg).toBe("Not found");
+        });
+    });
+    test("Return status code 404 if article_id is not in valid format", () => {
+      return request(app)
+        .post("/api/articles/abc/comments")
+        .expect(400)
+        .then(({ body }) => {
+          expect(body.msg).toBe("Invalid id type!");
+        });
+    });
+    test("Return status code 404 if username is not found", () => {
+      const newComment = { username: "BAM", body: "test" };
+      return request(app)
+        .post("/api/articles/1/comments")
+        .send(newComment)
+        .expect(404)
+        .then(({ body }) => {
+          expect(body.msg).toBe("Not found");
+        });
+    });
   });
-});
-test('invalid ID datatype provided for getArticleById', () => {
-  return request(app)
-    .get('/api/articles/SELECTA!')
-    .expect(400)
-    .then((res) => {
-      expect(res.body).toEqual({ msg: 'Invalid id type!' });
-    });
-});
-test("status:404, responds with a 404 error when passed a article id which does not exist in the database.", () => {
-  return request(app)
-    .get("/api/articles/111")
-    .expect(404)
-    .then(({ body }) => {
-      expect(body.msg).toEqual("Articles not found");
-    });
-});

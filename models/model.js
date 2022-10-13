@@ -50,4 +50,14 @@ exports.selectArticles = (topic) => {
   });
   };
      
-  
+  exports.createCommentByArticleId = (author, body, commentArticleId) => {
+    return db.query(
+        `INSERT INTO comments (author, body, article_id) 
+      VALUES($1,$2,$3) RETURNING *;`,
+        [author, body, commentArticleId]
+      )
+      .then((comment) => {
+        
+        return comment.rows[0];
+      });
+  };
