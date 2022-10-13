@@ -1,10 +1,5 @@
 const {selectTopics,selectArticleById,selectUsers,patchArticleById,selectArticles} = require('../models/model.js')
 
-
-const {selectArticlesa} = require('../models/example.js')
-
-
-
 exports.getTopics = (req, res) => {
     selectTopics()
     .then((topics) => {
