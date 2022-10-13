@@ -116,7 +116,6 @@ describe("8. GET /api/articles?topic", () => {
         descending: true,
       });
       res.body.articles.forEach((article) => {
-        console.log(Object.keys(article))
         expect(Object.keys(article)).toEqual([
           "article_id",
           "title",
@@ -147,32 +146,46 @@ describe("8. GET /api/articles?topic", () => {
   
   });
 
-  
 
-// ------------ Error Handling ------------//
-describe("Error Handling", () => {
-  test("404: show user that URL is invalid", () => {
-    return request(app)
-      .get("/api/BigManTing")
-      .expect(404)
-      .then((res) => {
-        expect(res.body.msg).toBe("Invalid URL");
-      });
+  describe('9. GET /api/articles/:article_id/comments', () => {
+    test("200: returns comments for article", () => {
+      return request(app)
+        .get("/api/articles/1/comments")
+        .expect(200)
+        .then((res) => {
+          expect(res.body).toBeSortedBy("created_at", {
+            descending: true,
+          });
+          res.body.forEach((comment) => {
+            expect(Object.keys(comment)).toEqual([
+              "comment_id",
+              "body",
+              "article_id",
+              "author",
+              "votes",
+              "created_at"
+            ]);
+          });
+        });
+        });
+
+    test("404: returns msg for article with no comments", () => {
+      return request(app)
+        .get("/api/articles/22/comments")
+        .expect(404)
+        .then((res) => {
+          expect(res.body).toEqual({ msg: "Articles not found" });
+        });
+    });
+    test("400: returns msg Invalid id type! for invalid id", () => {
+      return request(app)
+        .get("/api/articles/dd/comments")
+        .expect(400)
+        .then((res) => {
+          expect(res.body).toEqual({ msg: 'Invalid id type!' });
+        });
+
+    });
   });
-});
-test('invalid ID datatype provided for getArticleById', () => {
-  return request(app)
-    .get('/api/articles/SELECTA!')
-    .expect(400)
-    .then((res) => {
-      expect(res.body).toEqual({ msg: 'Invalid id type!' });
-    });
-});
-test("status:404, responds with a 404 error when passed a article id which does not exist in the database.", () => {
-  return request(app)
-    .get("/api/articles/111")
-    .expect(404)
-    .then(({ body }) => {
-      expect(body.msg).toEqual("Articles not found");
-    });
-});
+
+ 
