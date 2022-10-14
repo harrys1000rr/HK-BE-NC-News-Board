@@ -7,7 +7,9 @@
     "setup-dbs": "psql -f ./db/setup.sql",
     "seed": "node ./db/seeds/run-seed.js",
     "test": "jest",
-    "prepare": "husky install"
+    "prepare": "husky install",
+    "seed:prod": "NODE_ENV=production DATABASE_URL=$(heroku config:get postgres://mtpzilsqhfmqqt:18f5fb940d48671f11e2b1b02f33bf25a58826bb7e885c1cec8bcffafda57037@ec2-44-199-22-207.compute-1.amazonaws.com:5432/dbr5o4oamuc2ac) npm run seed",
+    "start": "node listen.js"
   },
   "repository": {
     "type": "git",
