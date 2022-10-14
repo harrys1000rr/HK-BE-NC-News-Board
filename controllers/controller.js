@@ -1,10 +1,6 @@
 const {selectTopics,selectArticleById,selectUsers,patchArticleById,selectArticles} = require('../models/model.js')
 
 
-const {selectArticlesa} = require('../models/example.js')
-
-
-
 exports.getTopics = (req, res) => {
     selectTopics()
     .then((topics) => {
@@ -41,14 +37,14 @@ exports.updateArticleById = (req, res,next) => {
       });
   };
 
-  exports.getArticles = (request, response,next) => {
-    const { topic } = request.query
-    selectArticlesa(topic).then((articles) => {
-        response.status(200).send({ articles })
-    })
-    .catch((err) => {
-        next(err);
-      });
-  };
 
+  exports.getArticles = async (req, res, next) => {
+    const {sort_by, order, topic} = req.query;
   
+    try {
+      const allArticles = await selectArticles(sort_by, order, topic);
+      res.status(200).send({allArticles});
+    } catch (err) {
+      next(err);
+    }
+  };

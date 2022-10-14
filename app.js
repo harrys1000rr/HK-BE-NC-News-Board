@@ -19,14 +19,22 @@ app.all('/*', (req, res) => {
 });
 
 app.use((err,req,res,next) => {
-  if (err.code === '22P02') {
+  if (err.msg === 'Topic does not exist') {
+      res.status(404).send({msg: 'Topic does not exist'})} 
+else if
+  (err.code === '22P02') {
   res.status(400).send({msg: 'Invalid id type!'})} 
-  else if (err.status) {
-    res.status(404).send({msg: 'Articles not found'})} 
+  else if 
+    (err.msg==='Invalid sort order') {
+      res.status(400).send({msg: 'Invalid sort order'})} 
+    else if
+    (err.code === '42703') {
+      res.status(400).send({msg: 'Invalid column sort query'})} 
     else 
-  {next(err)}})
-
+  {next(err)}}
+  )
   app.use((err,req,res,next) => {
+
     res.status(500).send({msg: 'Something went wrong!'})
     })
 
