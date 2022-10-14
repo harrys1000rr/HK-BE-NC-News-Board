@@ -122,7 +122,123 @@ describe("6. PATCH /api/articles/:article_id", () => {
       .then(({ body }) => {
         expect(body.msg).toEqual("Articles not found");
       });
+  })
+  
+  test('404: returns empty array when given topic query that does not exist', async () => {
+    const res = await request(app)
+      .get("/api/articles?topic=BIGMANHARRY")
+        .expect(404);
+        expect(res.body.msg).toEqual("Articles not found");
+  
   });
+  
+  });
+
+  describe("11. GET /api/articles (queries) orderby/sortby", () => {
+    test.only("status:200, returns all articles as an array of article objects with the required properties", () => {
+      return request(app)
+        .get("/api/articles")
+        .expect(200)
+        .then(({body}) => {
+          const {allArticles: articles} = body;
+          articles.forEach((article) => {
+            expect(article).toEqual(
+              expect.objectContaining({
+                author: expect.any(String),
+                title: expect.any(String),
+                article_id: expect.any(Number),
+                topic: expect.any(String),
+                created_at: expect.any(String),
+                votes: expect.any(Number),
+                comment_count: expect.any(Number),
+              })
+            );
+          });
+        });
+    });
+    test.only("status:200, can query db to sort results by a field", () => {
+        return request(app)
+          .get("/api/articles?sort_by=votes")
+          .expect(200)
+          .then(({body}) => {
+            const {allArticles: articles} = body;
+            expect(articles).toBeSortedBy("votes", {descending: true});
+          });
+      });
+
+      test.only("status:200, can set sort order", () => {
+        return request(app)
+          .get("/api/articles?sort_by=votes&order=desc")
+          .expect(200)
+          .then(({body}) => {
+            const {allArticles: articles} = body;
+            expect(articles).toBeSortedBy("votes", {descending: true});
+          });
+      });
+
+      test.only("status:200, can filter by topic name", () => {
+        return request(app)
+          .get("/api/articles?topic=mitch")
+          .expect(200)
+          .then(({body}) => {
+            const {allArticles: articles} = body;
+            expect(articles.every((article) => article.topic === "mitch")).toBe(
+              true
+            );
+          });
+      });
+
+      test.only("status:200, can sort, set sort order, and filter by topic name", () => {
+        return request(app)
+          .get("/api/articles?topic=mitch&sort_by=votes&order=asc")
+          .expect(200)
+          .then(({body}) => {
+            const {allArticles: articles} = body;
+            expect(articles).toBeSortedBy("votes", {ascending: true});
+            expect(articles.every((article) => article.topic === "mitch")).toBe(
+              true
+            );
+          });
+      });
+    });
+
+    test.only("status:200, returns [] if filter topic has no articles associated", () => {
+      return request(app)
+        .get("/api/articles?topic=paper")
+        .expect(200)
+        .then(({body}) => {
+          expect(body.allArticles).toEqual([]);
+        });
+    });
+
+      test.only("status:400, sorting by a non-existent column", () => {
+        return request(app)
+          .get("/api/articles?sort_by=loudest_voice")
+          .expect(400)
+          .then(({body}) => {
+            expect(body.msg).toBe("Invalid column sort query");
+          });
+      });
+
+      test.only("status:400, ordered by something other than ASC / DESC", () => {
+        return request(app)
+          .get("/api/articles?topic=mitch&sort_by=votes&order=random")
+          .expect(400)
+          .then(({body}) => {
+            expect(body.msg).toBe("Invalid sort order");
+          });
+      });
+
+      test.only("status:404, filter by non-existent topic", () => {
+        return request(app)
+          .get("/api/articles?topic=operationButterfly")
+          .expect(404)
+          .then(({body}) => {
+            expect(body.msg).toBe("Topic does not exist");
+          });
+      });
+    
+  
   test('400: returns 400 when invalid article_id datatype provided', () => {
     return request(app)
       .get('/api/articles/SELECTA!')
@@ -134,6 +250,7 @@ describe("6. PATCH /api/articles/:article_id", () => {
 
 });
   
+
 
 
 
