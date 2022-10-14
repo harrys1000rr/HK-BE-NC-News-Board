@@ -1,6 +1,5 @@
 const db = require('../db/connection.js')
 
-
 exports.selectTopics = () => {
     return db
     .query('SELECT * FROM topics')
@@ -49,16 +48,25 @@ exports.selectArticles = (topic) => {
     return result.rows;
   });
   };
-     
-  exports.fetchArticleComments = (article_id) => {
-    return db
-      .query(`SELECT * FROM comments WHERE article_id = $1 order by created_at desc`, [article_id])
-      .then((result) => {
-        if (result["rowCount"] === 0) {
-
-          return Promise.reject({ status: 404, msg: 'Articles not found'});
-        }
-  return result.rows;
-      });
-  };
+    
+    exports.fetchCommentsByID = async (articleID) => {
+      const commentsResponse = await db.query(
+        `SELECT * FROM comments WHERE article_id = $1 order by created_at desc;`,
+        [articleID]
+      );
+      if (commentsResponse.rowCount === 0) {
+        const isValidArticleID = await db.query(
+          `SELECT * FROM articles WHERE article_id = $1;`,
+          [articleID]
+        );
+        if (isValidArticleID.rowCount === 0) {
+          return Promise.reject({
+            status: 404,
+            code:234,
+            msg: `This article_id does not exist`,
+          });
+      }
+    };
   
+      return commentsResponse.rows;
+  }

@@ -148,36 +148,34 @@ describe("8. GET /api/articles?topic", () => {
 
 
   describe('9. GET /api/articles/:article_id/comments', () => {
-    test("200: returns comments for article", () => {
+    test.only("status:200, responds with an array of comments for a given article_id", () => {
+      const path = "/api/articles/1/comments";
       return request(app)
-        .get("/api/articles/1/comments")
+        .get(path)
         .expect(200)
-        .then((res) => {
-          expect(res.body).toBeSortedBy("created_at", {
-            descending: true,
-          });
-          res.body.forEach((comment) => {
-            expect(Object.keys(comment)).toEqual([
-              "comment_id",
-              "body",
-              "article_id",
-              "author",
-              "votes",
-              "created_at"
-            ]);
+        .then(({ body }) => {
+          body.comments.forEach(() => {
+            expect.objectContaining({
+              comment_id: expect.any(Number),
+              votes: expect.any(Number),
+              created_at: expect.any(String),
+              author: expect.any(String),
+              body: expect.any(String),
+            });
           });
         });
-        });
+    });
+  
 
-    test("404: returns msg for article with no comments", () => {
+    test.only("404: returns msg for article_id that does not exist", () => {
       return request(app)
         .get("/api/articles/22/comments")
         .expect(404)
         .then((res) => {
-          expect(res.body).toEqual({ msg: "Articles not found" });
+          expect(res.body).toEqual({ msg: "This article_id does not exist" });
         });
     });
-    test("400: returns msg Invalid id type! for invalid id", () => {
+    test.only("400: returns msg Invalid id type! for invalid id", () => {
       return request(app)
         .get("/api/articles/dd/comments")
         .expect(400)
