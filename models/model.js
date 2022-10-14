@@ -58,6 +58,7 @@ exports.selectArticles = async (
         msg: "Topic does not exist",
       });
     }
+
   }
 
   // base query
