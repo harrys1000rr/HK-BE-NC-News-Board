@@ -5,10 +5,10 @@ const {getTopics,getArticleById,getUsers,updateArticleById,getArticles} = requir
 
 const app = express();
 app.use(cors());
-app.use(express.json(
+app.use(express.json())
 
 
-app.get('/api/topics', getTopics);
+app.get('/api/topics', getTopics)
 
 app.get('/api/articles', getArticles);
 
